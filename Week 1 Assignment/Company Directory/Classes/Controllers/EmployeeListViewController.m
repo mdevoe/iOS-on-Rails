@@ -7,19 +7,23 @@
 //
 
 #import "EmployeeListViewController.h"
+#import "Employee.h"
+#import "EmployeeViewController.h"
 
 @implementation EmployeeListViewController
+@synthesize employees;
 
 - (void)dealloc {
-    // @todo Release instance variables from properties
-    [super dealloc];
+  [employees release];
+  [super dealloc];
 }
 
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
+    //shouldn't this be initialized in the constructor?
+    self.employees = [Employee sampleListOfEmployees];
     self.title = NSLocalizedString(@"Company Directory", nil);
 }
 
@@ -50,19 +54,18 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    return 0; // @todo Return a number of cells based on the employees array
+  return [employees count]; // @todo Return a number of cells based on the employees array
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *CellIdentifier = @"Cell";
-    
+    static NSString *CellIdentifier = @"Cell";    
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
     if (!cell) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
     }
-    
-    // @todo Configure your table view cell for the corresponding employee
-    
+    cell.textLabel.text = [[employees objectAtIndex:[indexPath row]] name];
+    cell.detailTextLabel.text = [[employees objectAtIndex:[indexPath row]] title];
+        
     return cell;
 }
 
@@ -70,6 +73,9 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     // @todo Create and push a new view configured for the corresponding employee
+  EmployeeViewController *v=[[EmployeeViewController alloc] initWithStyle:UITableViewStyleGrouped];
+  [v setMyEmployee:[employees objectAtIndex:[indexPath row]]]; 
+  [self.navigationController pushViewController:v  animated:true];
 }
 
 @end
